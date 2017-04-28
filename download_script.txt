@@ -1,0 +1,9 @@
+import requests
+>>> r = requests.get('http://ichart.finance.yahoo.com/table.csv?s=SPY', stream=True)
+>>> r
+<Response [200]>
+>>> with open('GOOG.csv', 'wb') as f:
+...     for chunk in r.iter_content(chunk_size=1024):
+...             if chunk:
+...                     f.write(chunk)
+
