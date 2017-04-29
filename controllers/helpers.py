@@ -37,11 +37,11 @@ def get_api_data(endpoint_url, params, filepath, index_c='DATE'):
     """Retrieve info for an API and store it in a file."""
     with open(filepath, 'wb') as fi:
         response = requests.get(endpoint_url, stream=True, params=params)
-    if not response.ok:
-        print "Something went wrong."
-    for segment in response.iter_content(1024):
-        fi.write(segment)
-    odf = pd.read_csv('filepath', parse_dates=True, index_col=index_c)
+        if not response.ok:
+            print "Something went wrong."
+        for segment in response.iter_content(1024):
+            fi.write(segment)
+    odf = pd.read_csv(filepath, parse_dates=True, index_col=index_c)
     return odf
 
 

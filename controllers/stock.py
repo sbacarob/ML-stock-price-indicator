@@ -31,16 +31,16 @@ class Stock(object):
 
     def add_rolling_mean(self, rm):
         """Add the rolling mean's data to the dataset."""
-        self.data['rolling_mean'] = rm[self.symb]
+        self.data['rolling_mean'] = rm
 
     def add_bollinger_bands(self, rstd):
         """Add the bollinger bands' data to the dataset."""
-        self.data['upper_band'] = self.data['rolling_mean'] + 2 * rstd[self.symb]
-        self.data['lower_band'] = self.data['rolling_mean'] - 2 * rstd[self.symb]
+        self.data['upper_band'] = self.data['rolling_mean'] + 2 * rstd
+        self.data['lower_band'] = self.data['rolling_mean'] - 2 * rstd
 
     def add_spy_info(self):
         """Add S&P 500's info to the dataset."""
-        spy = normalize_data(self.retrieve_stock_info('SPY'), 'SPY')
+        spy = normalize_data(retrieve_stock_info('SPY'), 'SPY')
         self.data = self.data.join(spy, how='inner')
 
     def add_beta_and_sharpe(self):
@@ -84,8 +84,8 @@ class Stock(object):
         url = stlfsi['base_url']
         params = stlfsi['params']
         params[''] = get_str_date()
-        stlfsi_data = get_api_data(url, params, '../data/stlfsi.csv')
-        self.data.join(stlfsi_data, how='left')
+        stlfsi_data = get_api_data(url, params, 'data/stlfsi.csv')
+        self.data = self.data.join(stlfsi_data, how='left')
         self.data['STLFSI'] = self.data['STLFSI'].fillna(method='ffill')
         if isnull(self.data.ix[0]['STLFSI']):
             for i, v in self.data.iterrows():
