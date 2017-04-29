@@ -1,5 +1,5 @@
 """Module that runs the application."""
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -7,8 +7,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def index():
     """Index of the application."""
-    print request
-    return make_response(jsonify('hola'))
+    return render_template('index.html'), 200
 
 
 @app.route('/train', methods=['GET', 'POST'])
