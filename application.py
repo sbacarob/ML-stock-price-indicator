@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify, render_template
 from controllers.stock import Stock
 from controllers.model import Model
+from controllers.helpers import retrieve_stock_info
 
 app = Flask(__name__)
 
@@ -28,6 +29,15 @@ def train_model(symb):
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     """Make predictions for the given date range and ticker symbols."""
+
+
+@app.route('/hcdata', methods=['GET'])
+def get_hc_ready_data():
+    """Return the data for some stock in the format used by Highcharts."""
+    symb = request.args.get('symb', '')
+    stock = retrieve_stock_info(symb)
+    list_in_hc = [[ix.value / 100000, k[symb]] for ix, k in stock.iterrows()]
+    return jsonify(list_in_hc), 200
 
 
 if __name__ == '__main__':
