@@ -36,7 +36,7 @@ def get_hc_ready_data():
     """Return the data for some stock in the format used by Highcharts."""
     symb = request.args.get('symb', '')
     stock = retrieve_stock_info(symb)
-    list_in_hc = [[ix.value / 100000, k[symb]] for ix, k in stock.iterrows()]
+    list_in_hc = [[ix.value / 1000000, k[symb]] for ix, k in stock.iterrows()]
     return jsonify(list_in_hc), 200
 
 

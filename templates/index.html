@@ -16,108 +16,36 @@
 
       </div>
       <div class="col-md-9" style="padding-top:40px">
-        <div class="col-md-12" id="spy-container" style="height:300px">
+        <div class="col-md-4" id="spy-container" style="height:300px">
 
         </div>
       </div>
     </div>
     <script>
-      Highcharts.theme = {
-  "colors": ["#A9CF54", "#C23C2A", "#FFFFFF", "#979797", "#FBB829"],
-  "chart": {
-    "backgroundColor": "#242F39",
-    "style": {
-      "color": "white"
-    }
-  },
-  "legend": {
-    "enabled": true,
-    "align": "right",
-    "verticalAlign": "bottom",
-    "itemStyle": {
-      "color": "#C0C0C0"
-    },
-    "itemHoverStyle": {
-      "color": "#C0C0C0"
-    },
-    "itemHiddenStyle": {
-      "color": "#444444"
-    }
-  },
-  "title": {
-    "text": {},
-    "style": {
-      "color": "#FFFFFF"
-    }
-  },
-  "tooltip": {
-    "backgroundColor": "#1C242D",
-    "borderColor": "#1C242D",
-    "borderWidth": 1,
-    "borderRadius": 0,
-    "style": {
-      "color": "#FFFFFF"
-    }
-  },
-  "subtitle": {
-    "style": {
-      "color": "#666666"
-    }
-  },
-  "xAxis": {
-    "gridLineColor": "#2E3740",
-    "gridLineWidth": 1,
-    "labels": {
-      "style": {
-        "color": "#525252"
-      }
-    },
-    "lineColor": "#2E3740",
-    "tickColor": "#2E3740",
-    "title": {
-      "style": {
-        "color": "#FFFFFF"
-      },
-      "text": {}
-    }
-  },
-  "yAxis": {
-    "gridLineColor": "#2E3740",
-    "gridLineWidth": 1,
-    "labels": {
-      "style": {
-        "color": "#525252"
-      },
-      "lineColor": "#2E3740",
-      "tickColor": "#2E3740",
-      "title": {
-        "style": {
-          "color": "#FFFFFF"
-        },
-        "text": {}
-      }
-    }
-  }
-}
-var hc_data
-  $.get('/hcdata?symb=SPY', function(data){
-    Highcharts.stockChart('spy-container', {
-        rangeSelector: {
-            selected: 1
-        },
 
-        title: {
-            text: 'S&P 500 Index Price'
-        },
+      $.getJSON('../static/scripts/dotabuff.json', function(json){
+        Highcharts.theme = json;
+        Highcharts.setOptions(Highcharts.theme);
+      });
 
-        series: [{
-            name: 'SPY',
-            data: data
-        }]
-    });
-  });
+      var hc_data
+        $.get('/hcdata?symb=SPY', function(data){
+          Highcharts.stockChart('spy-container', {
+              rangeSelector: {
+                  selected: 1
+              },
 
-  Highcharts.setOptions(Highcharts.theme);
+              title: {
+                  text: 'S&P 500 Index Price'
+              },
+
+              series: [{
+                  name: 'SPY',
+                  data: data
+              }]
+          });
+        });
+
     </script>
   </body>
 </html>

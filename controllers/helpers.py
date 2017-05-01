@@ -11,13 +11,13 @@ def retrieve_stock_info(symb):
     :param symb: the symbol of the stock we want to get.
     :return: a dataframe with the info for the stock with the given symbol. None if the request was not succesful.
     """
-    with open('%s.csv' % (symb), 'wb') as fi:
+    with open('data/%s.csv' % (symb), 'wb') as fi:
         response = requests.get('http://ichart.finance.yahoo.com/table.csv?s=%s' % (symb), stream=True)
         if not response.ok:
             return None
         for segment in response.iter_content(1024):
             fi.write(segment)
-        df = pd.read_csv('%s.csv' % (symb), index_col='Date', parse_dates=True, usecols=['Date', 'Adj Close'], na_values=['NaN'])
+        df = pd.read_csv('data/%s.csv' % (symb), index_col='Date', parse_dates=True, usecols=['Date', 'Adj Close'], na_values=['NaN'])
         df = df.rename(columns={'Adj Close': symb})
         df = df.reindex(index=df.index[::-1])
         return df.dropna()
