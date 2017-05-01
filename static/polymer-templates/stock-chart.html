@@ -1,0 +1,26 @@
+<link rel="import" href="../scripts/bower_components/iron-ajax/iron-ajax.html">
+<dom-module id="stock-chart">
+	<template>
+		<!-- Template para los items de la lista de microservicios -->
+		<iron-ajax auto url="/hcdata?symb=[[symb]]" handle-as="json" on-response="handleResponse"></iron-ajax>
+		<div class="col-md-12 text-center" id="[[symb]]-chart" style="padding:0;background:#242f39;height:100%">
+			<span id="spinner" class="fa fa-5x fa-spin fa-spinner" style="font-size:72pt;margin-top:80px"></span>
+		</div>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'stock-chart',
+			properties: {
+				symb: String
+			},
+			ready: function(){
+			},
+			handleResponse: function(data){
+				console.log("Todo va bien");
+
+				$(this.$.spinner).css('display','none');
+			}
+		});
+	</script>
+</dom-module>
