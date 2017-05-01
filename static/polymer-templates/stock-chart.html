@@ -12,14 +12,29 @@
 		Polymer({
 			is: 'stock-chart',
 			properties: {
-				symb: String
+				symb: String,
+        kind: String
 			},
 			ready: function(){
 			},
 			handleResponse: function(data){
-				console.log("Todo va bien");
-
 				$(this.$.spinner).css('display','none');
+        console.log(this.symb + '-chart');
+
+        Highcharts.stockChart(this.symb + '-chart', {
+            rangeSelector: {
+                selected: 6
+            },
+
+            title: {
+                text: this.symb + ' ' + this.kind + ' Price'
+            },
+
+            series: [{
+                name: this.symb,
+                data: data
+            }]
+        });
 			}
 		});
 	</script>

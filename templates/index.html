@@ -20,11 +20,14 @@
 
       </div>
       <div class="col-md-9" style="padding-top:40px">
-        <div class="col-md-4" id="spy-container" style="height:300px">
-
+        <div class="col-md-4" style="height:300px">
+          <!-- <stock-chart symb='GOOG' kind='stock'></stock-chart> -->
         </div>
         <div class="col-md-4" style="height:300px">
-          <stock-chart symb='GOOG'></stock-chart>
+          <!-- <stock-chart symb='SPY' kind='index'></stock-chart> -->
+        </div>
+        <div class="col-md-4" style="height:300px">
+          <stock-chart symb='AAPL' kind='stock'></stock-chart>
         </div>
       </div>
     </div>
@@ -34,24 +37,6 @@
         Highcharts.theme = json;
         Highcharts.setOptions(Highcharts.theme);
       });
-
-      var hc_data
-        $.get('/hcdata?symb=SPY', function(data){
-          Highcharts.stockChart('spy-container', {
-              rangeSelector: {
-                  selected: 1
-              },
-
-              title: {
-                  text: 'S&P 500 Index Price'
-              },
-
-              series: [{
-                  name: 'SPY',
-                  data: data
-              }]
-          });
-        });
 
     </script>
   </body>
