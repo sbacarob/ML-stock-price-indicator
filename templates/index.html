@@ -3,35 +3,52 @@
   <head>
     <meta charset='utf-8' />
     <title>Stock Price Indicator</title>
+    <script src="../static/scripts/bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <link rel="stylesheet" href="../static/styles/bootstrap.min.css" />
     <link rel="stylesheet" href="../static/styles/stylesheet.css" />
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="../static/scripts/highstock.js"></script>
     <script src="../static/scripts/exporting.js"></script>
     <script src="../static/scripts/dark-unica.js"></script>
-    <script src="../static/scripts/bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <link rel="import" href="../static/scripts/bower_components/polymer/polymer.html" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="import" href="../static/polymer-templates/stock-chart.html" />
   </head>
   <body>
-    <div class="container-fluid" style="padding:0">
-      <div class="col-md-3" style="height:700px;background:#121528">
+    <div id="container" class="container-fluid" style="padding:0">
+      <div id="sidebar" class="col-md-3" style="height:200px;background:#121528">
 
       </div>
-      <div class="col-md-9" style="padding-top:40px">
-        <div class="col-md-4" style="height:300px">
-          <!-- <stock-chart symb='GOOG' kind='stock'></stock-chart> -->
+      <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
+        <div class="row" style="padding-top:40px">
+          <div class="col-md-4" style="height:300px;margin-bottom:40px">
+            <stock-chart symb='GOOG' kind='stock'></stock-chart>
+          </div>
+          <div class="col-md-4" style="height:300px;margin-bottom:40px">
+            <stock-chart symb='AMZN' kind='stock'></stock-chart>
+          </div>
+          <div class="col-md-4" style="height:300px;margin-bottom:40px">
+            <stock-chart symb='AAPL' kind='stock'></stock-chart>
+          </div>
         </div>
-        <div class="col-md-4" style="height:300px">
-          <!-- <stock-chart symb='SPY' kind='index'></stock-chart> -->
-        </div>
-        <div class="col-md-4" style="height:300px">
-          <stock-chart symb='AAPL' kind='stock'></stock-chart>
+        <div class="row">
+          <div class="col-md-12" style="height:300px;margin-bottom:40px">
+            <stock-chart symb='SPY' kind='index'></stock-chart>
+          </div>
         </div>
       </div>
     </div>
     <script>
+
+      $("Document").ready(function(){
+        $("#sidebar").height($(window).height());
+        $("#mainpane").height($(window).height());
+      });
+
+      $(window).resize(function(){
+        $("#sidebar").height($(window).height());
+        $("#mainpane").height($(window).height());
+      });
 
       $.getJSON('../static/scripts/dotabuff.json', function(json){
         Highcharts.theme = json;

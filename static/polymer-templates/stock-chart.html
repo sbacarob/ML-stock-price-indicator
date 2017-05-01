@@ -19,11 +19,11 @@
 			},
 			handleResponse: function(data){
 				$(this.$.spinner).css('display','none');
-        console.log(this.symb + '-chart');
+				data = data['detail']['__data__']['response'];
 
         Highcharts.stockChart(this.symb + '-chart', {
             rangeSelector: {
-                selected: 6
+                selected: 1
             },
 
             title: {
@@ -34,8 +34,8 @@
                 name: this.symb,
                 data: data
             }]
-        });
-			}
+        	});
+			  }
 		});
 	</script>
 </dom-module>
