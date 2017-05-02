@@ -13,27 +13,34 @@
     <link rel="import" href="../static/scripts/bower_components/polymer/polymer.html" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="import" href="../static/polymer-templates/stock-chart.html" />
+    <link href="https://fonts.googleapis.com/css?family=Yantramanav" rel="stylesheet">
   </head>
   <body>
     <div id="container" class="container-fluid" style="padding:0">
-      <div id="sidebar" class="col-md-3" style="height:200px;background:#121528">
-
+      <div id="sidebar" class="col-md-3" style="height:200px;background:#121528;color:#ccc;font-family:'Yantramanav', sams-serif">
+        <h2 style="margin-top:35px">Stock price indicator</h2>
+        <button id="btn-add">Add</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
-        <div class="row" style="padding-top:40px">
-          <div class="col-md-4" style="height:300px;margin-bottom:40px">
-            <stock-chart symb='GOOG' kind='stock'></stock-chart>
-          </div>
-          <div class="col-md-4" style="height:300px;margin-bottom:40px">
-            <stock-chart symb='AMZN' kind='stock'></stock-chart>
-          </div>
-          <div class="col-md-4" style="height:300px;margin-bottom:40px">
-            <stock-chart symb='AAPL' kind='stock'></stock-chart>
-          </div>
+        <div id="tracking-pane" class="container-fluid">
+
         </div>
-        <div class="row">
-          <div class="col-md-12" style="height:300px;margin-bottom:40px">
-            <stock-chart symb='SPY' kind='index'></stock-chart>
+        <div id="market-pane" class="container-fluid">
+          <div class="row" style="padding-top:40px">
+            <div class="col-md-4" style="height:300px;margin-bottom:40px">
+              <stock-chart symb='GOOG' kind='stock'></stock-chart>
+            </div>
+            <div class="col-md-4" style="height:300px;margin-bottom:40px">
+              <stock-chart symb='AMZN' kind='stock'></stock-chart>
+            </div>
+            <div class="col-md-4" style="height:300px;margin-bottom:40px">
+              <stock-chart symb='AAPL' kind='stock'></stock-chart>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" style="height:300px;margin-bottom:40px">
+              <stock-chart symb='SPY' kind='index'></stock-chart>
+            </div>
           </div>
         </div>
       </div>
@@ -53,6 +60,10 @@
       $.getJSON('../static/scripts/dotabuff.json', function(json){
         Highcharts.theme = json;
         Highcharts.setOptions(Highcharts.theme);
+      });
+
+      $("#btn-add").click(function(){
+        $("#tracking-pane").append("<div class='row' style='padding-top:40px'><div class='col-md-4' style='height:300px;margin-bootom:40px'><stock-chart symb='TSLA' kind='stock'></stock-chart></div></div>")
       });
 
     </script>
