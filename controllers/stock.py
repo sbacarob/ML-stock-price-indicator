@@ -105,14 +105,15 @@ class Stock(object):
         self.add_beta_and_sharpe()
         self.add_stlouis_data()
 
-    def get_subsets(self, n_days):
+    def get_subsets(self, n_days=20):
         """Return copies of the data with labels for looking n_days ahead."""
         X = self.data.copy().ix[:-(n_days - 1), :]
         X = X.fillna(method='bfill')
         y = self.data.copy().ix[n_days - 1:][self.symb]
-        return X, y
+        x_pred = self.data.copy().ix[-(n_days):, :]
+        return X, y, x_pred
 
     def get_split_data(self, n_days=20):
         """Return train and test split data."""
-        X, y = self.get_subsets(n_days=n_days)
+        X, y, _ = self.get_subsets(n_days=n_days)
         return train_test_split(X, y, test_size=0.3, random_state=42)

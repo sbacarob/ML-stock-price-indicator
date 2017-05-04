@@ -1,12 +1,15 @@
 """Module that runs the application."""
-from flask import Flask, request, jsonify, render_template
+from datetime import timedelta
 from controllers.stock import Stock
 from controllers.model import Model
-from controllers.helpers import retrieve_stock_info
+from flask import Flask, request, jsonify, render_template
+from controllers.helpers import retrieve_stock_info, get_timestamp_from_date
 
 app = Flask(__name__)
 
 model = None
+
+cached_models = {}
 
 
 @app.route('/', methods=['GET'])
@@ -20,10 +23,10 @@ def train_model(symb):
     """Train a model for the given date range and ticker symbols."""
     print(request)
     s = Stock(str(symb))
-    x_tr, x_t, y_tr, y_t = s.get_split_data()
+    X, y, x_pred = s.get_subsets()
     model = Model()
-    model.train(x_tr, y_tr)
-    return jsonify(str(model.predict(x_t))), 200
+    model.train(X, y)
+    return jsonify(str(model.predict(x_pred))), 200
 
 
 @app.route('/predict', methods=['GET', 'POST'])
@@ -36,8 +39,27 @@ def get_hc_ready_data():
     """Return the data for some stock in the format used by Highcharts."""
     symb = request.args.get('symb', '')
     stock = retrieve_stock_info(symb)
-    list_in_hc = [[ix.value / 1000000, k[symb]] for ix, k in stock.iterrows()]
+    list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix), k[symb]] for ix, k in stock.iterrows()]
     return jsonify(list_in_hc), 200
+
+
+@app.route('/hcpredict', methods=['GET'])
+def get_hc_prediction_data():
+    """Return the data for a stock and predictions for the given number of days."""
+    symb = request.args.get('symb', '')
+    n_days = int(request.args.get('days', ''))
+    s = Stock(symb)
+    stock = retrieve_stock_info(symb)
+    X, y, x_pred = s.get_subsets(n_days=n_days)
+    model = Model()
+    model.train(X, y)
+    print x_pred.index
+    predicted_dates = [(val + timedelta(days=n_days)).value / 1000000 for val in x_pred.index]
+    predicted = model.predict(x_pred)
+    print predicted
+    pred_res = [[predicted_dates[i], k * stock.ix[0][symb]] for i, k in enumerate(predicted)]
+    print pred_res
+    return jsonify({'base': [[ix.value / 1000000, k[symb]] for ix, k in stock.iterrows()], 'predicted': pred_res})
 
 
 if __name__ == '__main__':

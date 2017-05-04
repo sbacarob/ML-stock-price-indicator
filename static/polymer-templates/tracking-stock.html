@@ -1,0 +1,51 @@
+<link rel="import" href="../scripts/bower_components/iron-ajax/iron-ajax.html">
+<dom-module id="tracking-stock">
+	<template>
+		<!-- Template para los items de la lista de microservicios -->
+		<iron-ajax auto url="/hcpredict?symb=[[symb]]&days=[[days]]" handle-as="json" on-response="handleResponse"></iron-ajax>
+		<div class="col-md-12 text-center" id="[[symb]]-chart" style="padding:0;background:#242f39;height:100%">
+			<span id="spinner" class="fa fa-5x fa-spin fa-spinner" style="font-size:72pt;margin-top:80px"></span>
+		</div>
+	</template>
+	<script>
+
+		Polymer({
+			is: 'tracking-stock',
+			properties: {
+				symb: String,
+        kind: String,
+				days: {
+					type: String,
+					value: '20'
+				}
+			},
+			ready: function(){
+			},
+			handleResponse: function(data){
+				$(this.$.spinner).css('display','none');
+        var resp_object = data['detail']['__data__']['response'];
+				var data = resp_object['base'];
+        var predictions = resp_object['predicted']
+
+        Highcharts.stockChart(this.symb + '-chart', {
+            rangeSelector: {
+                selected: 1
+            },
+
+            title: {
+                text: this.symb + ' ' + this.kind + ' Price'
+            },
+
+            series: [{
+                name: this.symb,
+                data: data
+            },
+            {
+                name: this.symb + '-prediction',
+                data: predictions
+            }]
+        	});
+			  }
+		});
+	</script>
+</dom-module>

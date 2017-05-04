@@ -1,6 +1,7 @@
 """All the helpers go here."""
 import requests
 import pandas as pd
+from time import mktime
 from datetime import datetime
 
 
@@ -48,3 +49,8 @@ def get_api_data(endpoint_url, params, filepath, index_c='DATE'):
 def get_str_date():
     """Return a string for the current date."""
     return str(datetime.now())[:10]
+
+
+def get_timestamp_from_date(dt):
+    """Return an integer timestamp from a date string."""
+    return int(mktime(datetime.strptime(dt, '%Y-%m-%d').timetuple())) * 1000

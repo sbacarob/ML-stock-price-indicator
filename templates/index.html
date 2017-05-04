@@ -13,6 +13,7 @@
     <link rel="import" href="../static/scripts/bower_components/polymer/polymer.html" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="import" href="../static/polymer-templates/stock-chart.html" />
+    <link rel="import" href="../static/polymer-templates/tracking-stock.html" />
     <link href="https://fonts.googleapis.com/css?family=Yantramanav" rel="stylesheet">
   </head>
   <body>
@@ -63,7 +64,7 @@
       });
 
       $("#btn-add").click(function(){
-        $("#tracking-pane").append("<div class='row' style='padding-top:40px'><div class='col-md-4' style='height:300px;margin-bootom:40px'><stock-chart symb='TSLA' kind='stock'></stock-chart></div></div>")
+        $("#tracking-pane").append("<div class='row' style='padding-top:40px'><div class='col-md-4' style='height:300px;margin-bottom:40px'><tracking-stock symb='AMZN' kind='stock' days='60'></tracking-stock></div></div>")
       });
 
     </script>
