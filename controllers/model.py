@@ -1,6 +1,7 @@
 """Module to store the model class."""
 from sklearn.svm import SVR
 from sklearn.ensemble import AdaBoostRegressor
+from sklearn.neighbors import KNeighborsRegressor
 
 
 class Model(object):
@@ -9,7 +10,7 @@ class Model(object):
 
     def __init__(self):
         """Create an instance of the model to make predictions."""
-        self.base_clf = SVR()
+        self.base_clf = KNeighborsRegressor(weights='distance')
         self.end_clf = AdaBoostRegressor(base_estimator=self.base_clf, random_state=42)
 
     def train(self, X_train, y_train):
