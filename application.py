@@ -1,5 +1,6 @@
 """Module that runs the application."""
-from datetime import timedelta
+from time import time
+from datetime import timedelta, datetime
 from controllers.stock import Stock
 from controllers.model import Model
 from flask import Flask, request, jsonify, render_template
@@ -53,8 +54,11 @@ def get_hc_prediction_data():
     X, y, x_pred = s.get_subsets(n_days=n_days)
     model = Model()
     model.train(X, y)
-    print x_pred.index
-    predicted_dates = [(val + timedelta(days=n_days)).value / 1000000 for val in x_pred.index]
+    t_a = x_pred.index[0]
+    t_b = datetime.now()
+    diff = t_b - t_a
+    delta = int(diff.total_seconds() / 60 / 60 / 24)
+    predicted_dates = [(val + timedelta(days=delta)).value / 1000000 for val in x_pred.index]
     predicted = model.predict(x_pred)
     print predicted
     pred_res = [[predicted_dates[i], k * stock.ix[0][symb]] for i, k in enumerate(predicted)]

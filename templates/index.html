@@ -18,16 +18,21 @@
   </head>
   <body>
     <div id="container" class="container-fluid" style="padding:0">
-      <div id="sidebar" class="col-md-3" style="height:200px;background:#121528;color:#ccc;font-family:'Yantramanav', sams-serif">
+      <div id="sidebar" class="col-md-3" style="height:200px;background:#121528;color:#ccc;font-family:'Yantramanav', sams-serif;padding-right:40px">
         <h2 style="margin-top:35px">Stock price indicator</h2>
+        <input id="input-symb" type="text" class="form-control" placeholder="Symbol" style="margin-bottom:10px"/>
+        <input id="input-days" type="text" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
         <button id="btn-add">Add</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
-        <div id="tracking-pane" class="container-fluid">
-
+        <div id="tracking-cont" class="container-fluid" style="display:none">
+          <legend style="color:#ccc;margin-top:38px">Tracking</legend>
+          <div id="tracking-pane" class="row">
+          </div>
         </div>
         <div id="market-pane" class="container-fluid">
-          <div class="row" style="padding-top:40px">
+          <legend style="color:#ccc;margin-top:38px">Market</legend>
+          <div class="row" style="padding-top:10px">
             <div class="col-md-4" style="height:300px;margin-bottom:40px">
               <stock-chart symb='GOOG' kind='stock'></stock-chart>
             </div>
@@ -64,7 +69,10 @@
       });
 
       $("#btn-add").click(function(){
-        $("#tracking-pane").append("<div class='row' style='padding-top:40px'><div class='col-md-4' style='height:300px'><tracking-stock symb='AAPL' kind='stock' days='60'></tracking-stock></div></div>")
+        $("#tracking-cont").css("display", "block");
+        var symb = $("#input-symb").val();
+        var days = $("#input-days").val();
+        $("#tracking-pane").append("<div class='col-md-4' style='height:300px;padding-top:10px;margin-bottom:40px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>")
       });
 
     </script>
