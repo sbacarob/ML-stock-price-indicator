@@ -1,10 +1,9 @@
 """Module that runs the application."""
-from time import time
-from datetime import timedelta, datetime
 from controllers.stock import Stock
 from controllers.model import Model
+from datetime import timedelta, datetime
 from flask import Flask, request, jsonify, render_template
-from controllers.helpers import retrieve_stock_info, get_timestamp_from_date
+from controllers.helpers import retrieve_stock_info, get_timestamp_from_date, get_query_related_tickers
 
 app = Flask(__name__)
 
@@ -40,7 +39,8 @@ def get_hc_ready_data():
     """Return the data for some stock in the format used by Highcharts."""
     symb = request.args.get('symb', '')
     stock = retrieve_stock_info(symb)
-    list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix), k[symb]] for ix, k in stock.iterrows()]
+    list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix),
+                   k[symb]] for ix, k in stock.iterrows()]
     return jsonify(list_in_hc), 200
 
 
@@ -63,7 +63,14 @@ def get_hc_prediction_data():
     print predicted
     pred_res = [[predicted_dates[i], k * stock.ix[0][symb]] for i, k in enumerate(predicted)]
     print pred_res
-    return jsonify({'base': [[ix.value / 1000000, k[symb]] for ix, k in stock.iterrows()], 'predicted': pred_res})
+    return jsonify({'base': [[ix.value / 1000000, k[symb]] for ix,
+                             k in stock.iterrows()], 'predicted': pred_res})
+
+
+@app.route('/tickers/<term>', methods=['GET'])
+def get_tickers(term):
+    """Get a list of possible symbols for a given query."""
+    return jsonify(get_query_related_tickers(term)), 200
 
 
 if __name__ == '__main__':

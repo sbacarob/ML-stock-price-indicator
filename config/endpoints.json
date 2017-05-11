@@ -43,5 +43,22 @@
         "mw": 2,
         "width":1168
       }
+    },
+  "yhoo-search": {
+    "base_url": "https://finance.yahoo.com/_finance_doubledown/api/resource/searchassist;searchTerm=",
+    "params": {
+      "bkt": "[%22finvideo015%22,%22fincanvassbackrt%22,%22fin-strm-test6%22,%22topcomment2-newest2%22,%22fndmtest%22,%22finnossl%22,%22fin-reel-ctrl%22,%22fin_fb2_on_qsp%22]",
+      "device": "desktop",
+      "feature": "canvassOffnet,newContentAttribution,relatedVideoFeature,videoNativePlaylist,livecoverage,delayedAppInitLong,canvassPresence,canvassNewest",
+      "intl": "us",
+      "lang": "en-US",
+      "partner": "none",
+      "prid": "94hjck5ch69le",
+      "region": "US",
+      "site": "finance",
+      "tz": "America/Los_Angeles",
+      "ver": "0.102.102",
+      "returnMeta": "true"
     }
+  }
 }

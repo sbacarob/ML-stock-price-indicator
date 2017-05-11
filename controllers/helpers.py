@@ -1,8 +1,10 @@
 """All the helpers go here."""
+import json
 import requests
 import pandas as pd
 from time import mktime
 from datetime import datetime
+from config.config import endpoints
 
 
 def retrieve_stock_info(symb):
@@ -54,3 +56,17 @@ def get_str_date():
 def get_timestamp_from_date(dt):
     """Return an integer timestamp from a date string."""
     return int(mktime(datetime.strptime(dt, '%Y-%m-%d').timetuple())) * 1000
+
+
+def get_query_related_tickers(term):
+    """Query Yahoo Finance to get search suggestions."""
+    result_set = []
+    endpoint = endpoints['yhoo-search']
+    query_url = endpoint['base_url'] + term
+    r = requests.get(query_url, params=endpoint['params'])
+    if r.status_code == 200:
+        js_obj = json.loads(r.text)
+        suggestions = js_obj['data']['items']
+        result_set = ["%s(%s) - %s" % (k['name'], k['symbol'],
+                                       k['exchDisp']) for k in suggestions if k['exchDisp'] in ('NASDAQ', 'NYSE')]
+    return result_set

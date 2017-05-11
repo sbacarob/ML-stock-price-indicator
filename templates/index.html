@@ -4,24 +4,26 @@
     <meta charset='utf-8' />
     <title>Stock Price Indicator</title>
     <script src="../static/scripts/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script src="../static/scripts/bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/styles/bootstrap.min.css" />
+    <link rel="stylesheet" href="../static/styles/jquery-ui.min.css" />
     <link rel="stylesheet" href="../static/styles/stylesheet.css" />
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="../static/scripts/highstock.js"></script>
     <script src="../static/scripts/exporting.js"></script>
     <script src="../static/scripts/dark-unica.js"></script>
     <link rel="import" href="../static/scripts/bower_components/polymer/polymer.html" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="import" href="../static/polymer-templates/stock-chart.html" />
     <link rel="import" href="../static/polymer-templates/tracking-stock.html" />
     <link href="https://fonts.googleapis.com/css?family=Yantramanav" rel="stylesheet">
+    <script src="../static/scripts/jquery-ui.min.js"></script>
   </head>
   <body>
     <div id="container" class="container-fluid" style="padding:0">
       <div id="sidebar" class="col-md-3" style="height:200px;background:#121528;color:#ccc;font-family:'Yantramanav', sams-serif;padding-right:40px">
-        <h2 style="margin-top:35px">Stock price indicator</h2>
-        <input id="input-symb" type="text" class="form-control" placeholder="Symbol" style="margin-bottom:10px"/>
-        <input id="input-days" type="text" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
+        <h2 style="margin-top:35px;margin-bottom:50px">Stock price indicator</h2>
+        <input id="input-symb" type="text" class="form-control" placeholder="Symbol" style="margin-bottom:10px"/ />
+        <input id="input-days" type="number" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
         <button id="btn-add">Add</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
@@ -51,11 +53,22 @@
         </div>
       </div>
     </div>
-    <script>
+    <script type="text/javascript">
 
       $("Document").ready(function(){
         $("#sidebar").height($(window).height());
         $("#mainpane").height($(window).height());
+
+        var url = "/tickers/<replace>"
+        $("#input-symb").keypress(function(){
+          console.log("Entra en la función");
+          req_url = url.replace('<replace>', $(this).val());
+          $.get(req_url, function(data){
+            $("#input-symb").autocomplete({
+              source: data
+            });
+          });
+        });
       });
 
       $(window).resize(function(){
@@ -71,8 +84,19 @@
       $("#btn-add").click(function(){
         $("#tracking-cont").css("display", "block");
         var symb = $("#input-symb").val();
-        var days = $("#input-days").val();
-        $("#tracking-pane").append("<div class='col-md-4' style='height:300px;padding-top:10px;margin-bottom:40px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>")
+        if (symb.includes(')') && symb.includes('(')){
+          symb = symb.substring(symb.indexOf('(') + 1, symb.indexOf(')'));
+          var days = $("#input-days").val();
+          if(Object.getOwnPropertyNames($("#" + symb + "-track-" + days)).length == 0){
+            $("#tracking-pane").append("<div class='col-md-4' style='height:300px;padding-top:10px;margin-bottom:40px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>");
+          }
+          else{
+            alert("You're already watching this setting. Try changing the stock's symbol or the number of days.");
+          }
+        }
+        else{
+          alert("Please select a valid stock");
+        }
       });
 
     </script>

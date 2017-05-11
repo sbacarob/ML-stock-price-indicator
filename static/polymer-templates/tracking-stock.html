@@ -3,7 +3,7 @@
 	<template>
 		<!-- Template para los items de la lista de microservicios -->
 		<iron-ajax auto url="/hcpredict?symb=[[symb]]&days=[[days]]" handle-as="json" on-response="handleResponse"></iron-ajax>
-		<div class="col-md-12 text-center" id="[[symb]]-chart" style="padding:0;background:#242f39;height:100%">
+		<div class="col-md-12 text-center" id="[[symb]]-track-[[days]]" style="padding:0;background:#242f39;height:100%">
 			<span id="spinner" class="fa fa-5x fa-spin fa-spinner" style="font-size:72pt;margin-top:80px"></span>
 		</div>
 	</template>
@@ -27,7 +27,7 @@
 				var data = resp_object['base'];
         var predictions = resp_object['predicted']
 
-        Highcharts.stockChart(this.symb + '-chart', {
+        Highcharts.stockChart(this.symb + '-track-' + this.days, {
             rangeSelector: {
                 selected: 1
             },
