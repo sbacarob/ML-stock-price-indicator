@@ -91,8 +91,12 @@ class Stock(object):
             for i, v in self.data.iterrows():
                 if isnull(v['STLFSI']):
                     continue
-                self.data.ix[0]['STLFSI'] = stlfsi_data.ix[i - dt.timedelta(weeks=1)]
-                break
+                try:
+                    self.data.ix[0]['STLFSI'] = stlfsi_data.ix[i - dt.timedelta(weeks=1)]
+                    break
+                except Exception:
+                    self.data['STLFSI'] = self.data['STLFSI'].fillna(method='bfill')
+                    break
             self.data['STLFSI'] = self.data['STLFSI'].fillna(method='ffill')
 
     def fill_dataset(self):
