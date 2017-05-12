@@ -5,6 +5,7 @@
     <title>Stock Price Indicator</title>
     <script src="../static/scripts/bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <script src="../static/scripts/bower_components/jquery/dist/jquery.min.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="../static/img/favicon.ico" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/styles/bootstrap.min.css" />
     <link rel="stylesheet" href="../static/styles/jquery-ui.min.css" />
@@ -21,10 +22,24 @@
   <body>
     <div id="container" class="container-fluid" style="padding:0">
       <div id="sidebar" class="col-md-3" style="height:200px;background:#121528;color:#ccc;font-family:'Yantramanav', sams-serif;padding-right:40px">
-        <h2 style="margin-top:35px;margin-bottom:50px">Stock price indicator</h2>
-        <input id="input-symb" type="text" class="form-control" placeholder="Symbol" style="margin-bottom:10px"/ />
+        <div class="row" style="margin-top:15px">
+          <div class="col-md-3" style="padding-top:5px">
+            <img style="margin-top:20px" src="../static/img/cubelogo.png" alt="logo" width=50 height=50/>
+          </div>
+          <div class="col-md-9" style="padding:0">
+            <h2 style="margin-bottom:30px">ML Stock price indicator</h2>
+          </div>
+        </div>
+        <h3 style="margin-top:0">
+          Add stocks to track:
+        </h3>
+        <label for="input-symb">Company</label>
+        <input id="input-symb" type="text" class="form-control" placeholder="Company or symbol" style="margin-bottom:15px"/>
+        Predict for<br />
+        <input id="r-dfn" type="radio" name="query-type" value="days-from-now"><label for="r-dfn"> Days from now </label>
+        <input id="r-dr" type="radio" name="query-type" value="date-range"><label for="r-dr"> Date range </label>
         <input id="input-days" type="number" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
-        <button id="btn-add">Add</button>
+        <button id="btn-add" class="btn form-control btn-info">Add</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
         <div id="tracking-cont" class="container-fluid" style="display:none">
@@ -88,7 +103,7 @@
           symb = symb.substring(symb.indexOf('(') + 1, symb.indexOf(')'));
           var days = $("#input-days").val();
           if(Object.getOwnPropertyNames($("#" + symb + "-track-" + days)).length == 0){
-            $("#tracking-pane").append("<div class='col-md-4' style='height:300px;padding-top:10px;margin-bottom:40px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>");
+            $("#tracking-pane").append("<div class='col-md-4' style='height:300px;margin-top:10px;margin-bottom:25px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>");
           }
           else{
             alert("You're already watching this setting. Try changing the stock's symbol or the number of days.");
