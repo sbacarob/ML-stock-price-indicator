@@ -18,6 +18,8 @@
     <link rel="import" href="../static/polymer-templates/tracking-stock.html" />
     <link href="https://fonts.googleapis.com/css?family=Yantramanav" rel="stylesheet">
     <script src="../static/scripts/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
   </head>
   <body>
     <div id="container" class="container-fluid" style="padding:0">
@@ -35,11 +37,43 @@
         </h3>
         <label for="input-symb">Company</label>
         <input id="input-symb" type="text" class="form-control" placeholder="Company or symbol" style="margin-bottom:15px"/>
-        Predict for<br />
-        <input id="r-dfn" type="radio" name="query-type" value="days-from-now"><label for="r-dfn"> Days from now </label>
-        <input id="r-dr" type="radio" name="query-type" value="date-range"><label for="r-dr"> Date range </label>
-        <input id="input-days" type="number" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
-        <button id="btn-add" class="btn form-control btn-info">Add</button>
+        <div class="col-md-12" style="padding-left:0">
+          Predict for
+        </div>
+        <div class="col-md-12" style="padding-left:0;padding-right:0">
+          <input id="r-dfn" type="radio" name="query-type" value="days-from-now" checked><label for="r-dfn"> Days from now </label>
+          <input id="r-dr" type="radio" name="query-type" value="date-range"><label for="r-dr"> Date range </label>
+          <input id="input-days" type="number" class="form-control" placeholder="Days ahead" style="margin-bottom:10px"/>
+        </div>
+        <div class="col-md-5 predict-dates" style="padding:0">
+          <input id="begin-date" type="text" class="form-control col-md-6 datepicker" placeholder="Begin date"/>
+        </div>
+        <div class="col-md-2 text-center predict-dates">
+          <p style="margin-top:5px">
+            <strong>-</strong>
+          </p>
+        </div>
+        <div class="col-md-5 predict-dates" style="padding:0">
+          <input id="end-date" type="text" class="form-control col-md-6 datepicker" placeholder="End date"/>
+        </div>
+        <div class="col-md-12" style="padding-left:0">
+          Training settings
+        </div>
+        <input id="full-data" type="radio" name="train-data" value="full-data" checked><label for="full-data"> Use all data </label>
+        <input id="data-range" type="radio" name="train-data" value="data-range"><label for="data-range"> Date range </label>
+        <div class="col-md-5 data-dates" style="padding:0">
+          <input id="begin-ddate" type="text" class="form-control col-md-6 datepicker" placeholder="Begin date"/>
+        </div>
+        <div class="col-md-2 text-center data-dates">
+          <p style="margin-top:5px">
+            <strong>-</strong>
+          </p>
+        </div>
+        <div class="col-md-5 data-dates" style="padding:0">
+          <input id="end-ddate" type="text" class="form-control col-md-6 datepicker" placeholder="End date"/>
+        </div>
+        <button id="btn-preadd" class="btn form-control" style="background:#242F39;color:#ccc;margin-top:10px">Pre-Add</button>
+        <button id="btn-add" class="btn form-control btn-info" style="margin-top:5px;background:#82b1ff;color:#21242F">Add Now</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
         <div id="tracking-cont" class="container-fluid" style="display:none">
@@ -84,6 +118,32 @@
             });
           });
         });
+
+        $("input[name=query-type]").change(function(){
+          if(this.value == 'days-from-now'){
+            $("#input-days").css('display', 'block');
+            $(".predict-dates").css('display', 'none');
+          }
+          else{
+            $("#input-days").css('display', 'none');
+            $(".predict-dates").css('display', 'block');
+          }
+        });
+
+        $("#r-dfn").click();
+
+        $("input[name=train-data]").change(function(){
+          if(this.value == 'full-data'){
+            $(".data-dates").css('display', 'none');
+          }
+          else{
+            $(".data-dates").css('display', 'block');
+          }
+        });
+
+        $("#full-data").click();
+
+        $(".datepicker").datepicker();
       });
 
       $(window).resize(function(){

@@ -2,3 +2,9 @@ body{
   background: #21242f;
   color: #82b1ff;
 }
+.predict-dates{
+  display:none;
+}
+.data-dates{
+  display:none;
+}
