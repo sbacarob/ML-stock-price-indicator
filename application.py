@@ -9,8 +9,6 @@ app = Flask(__name__)
 
 model = None
 
-cached_models = {}
-
 
 @app.route('/', methods=['GET'])
 def index():

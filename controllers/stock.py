@@ -4,17 +4,19 @@ import datetime as dt
 from pandas import isnull
 from config.config import endpoints
 from sklearn.model_selection import train_test_split
-from helpers import retrieve_stock_info, normalize_data, get_empty_df, get_api_data, get_str_date
+from helpers import retrieve_stock_info, normalize_data, get_empty_df, get_api_data, get_str_date, get_subset_dates
 
 
 class Stock(object):
 
     """Represents a stock object."""
 
-    def __init__(self, symb):
+    def __init__(self, symb, begin_date=None, end_date=None):
         """Create an instance of Stock."""
         self.symb = symb
         self.original_data = retrieve_stock_info(self.symb)
+        self.data = get_subset_dates(self.original_data, begin_date=begin_date,
+                                     end_date=end_date)
         self.data = normalize_data(self.original_data, self.symb)
         self.fill_dataset()
 

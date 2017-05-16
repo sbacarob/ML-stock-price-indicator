@@ -3,8 +3,10 @@ import json
 import requests
 import pandas as pd
 from time import mktime
-from datetime import datetime
 from config.config import endpoints
+from datetime import datetime, timedelta
+
+cached_stocks = {}
 
 
 def retrieve_stock_info(symb):
@@ -14,16 +16,24 @@ def retrieve_stock_info(symb):
     :param symb: the symbol of the stock we want to get.
     :return: a dataframe with the info for the stock with the given symbol. None if the request was not succesful.
     """
+    index_string = '%s-%s' % (symb, get_str_date())
+    if index_string in cached_stocks:
+        return cached_stocks[index_string]
     with open('data/%s.csv' % (symb), 'wb') as fi:
-        response = requests.get('http://ichart.finance.yahoo.com/table.csv?s=%s' % (symb), stream=True)
+        response = requests.get('http://ichart.finance.yahoo.com/table.csv?s=%s' %
+                                (symb), stream=True)
         if not response.ok:
             return None
         for segment in response.iter_content(1024):
             fi.write(segment)
-        df = pd.read_csv('data/%s.csv' % (symb), index_col='Date', parse_dates=True, usecols=['Date', 'Adj Close'], na_values=['NaN'])
+        df = pd.read_csv('data/%s.csv' % (symb),
+                         index_col='Date', parse_dates=True,
+                         usecols=['Date', 'Adj Close'], na_values=['NaN'])
         df = df.rename(columns={'Adj Close': symb})
         df = df.reindex(index=df.index[::-1])
-        return df.dropna()
+        df = df.dropna()
+        cached_stocks[index_string] = df
+        return df
 
 
 def normalize_data(data, symb):
@@ -67,6 +77,45 @@ def get_query_related_tickers(term):
     if r.status_code == 200:
         js_obj = json.loads(r.text)
         suggestions = js_obj['data']['items']
-        result_set = ["%s(%s) - %s" % (k['name'], k['symbol'],
-                                       k['exchDisp']) for k in suggestions if k['exchDisp'] in ('NASDAQ', 'NYSE')]
+        result_set = ["%s(%s) - %s" % (k['name'], k['symbol'], k['exchDisp']) for
+                      k in suggestions if k['exchDisp'] in ('NASDAQ', 'NYSE')]
     return result_set
+
+
+def get_subset_dates(data, begin_date=None, end_date=None):
+    """Return the data within the given dates."""
+    if type(begin_date) is str:
+        begin_date = datetime.strptime(begin_date, '%Y-%m-%d')
+    if type(end_date) is str:
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    if begin_date > end_date:
+        raise Exception('Invalid date range.')
+    if begin_date is None:
+        begin_date = data.index[0]
+    if end_date is None:
+        end_date = data.index[-1]
+    try:
+        bd2, ed2 = pd.Timestamp(begin_date), pd.Timestamp(end_date)
+        return data.ix[bd2: ed2]
+    except Exception:
+        ix = data.index
+        if begin_date not in ix:
+            changed = False
+            for i in range(1, 6):
+                if begin_date + timedelta(days=i) in ix:
+                    begin_date += timedelta(days=i)
+                    changed = True
+                    break
+            if not changed:
+                begin_date = ix[0]
+        if end_date not in ix:
+            changed = False
+            for i in range(1, 6):
+                if end_date - timedelta(days=i) in ix:
+                    end_date -= timedelta(days=i)
+                    changed = True
+                    break
+            if not changed:
+                end_date = ix[-1]
+        bd2, ed2 = pd.Timestamp(begin_date), pd.Timestamp(end_date)
+        return data.ix[bd2: ed2]
