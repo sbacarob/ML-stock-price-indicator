@@ -1,9 +1,11 @@
 """Module that runs the application."""
+from time import sleep
+from threading import Thread
+from controllers.helpers import *
 from controllers.stock import Stock
 from controllers.model import Model
 from datetime import timedelta, datetime
 from flask import Flask, request, jsonify, render_template
-from controllers.helpers import retrieve_stock_info, get_timestamp_from_date, get_query_related_tickers
 
 app = Flask(__name__)
 
@@ -65,12 +67,26 @@ def get_hc_prediction_data():
                              k in stock.iterrows()], 'predicted': pred_res})
 
 
+@app.route('/test', methods=['GET'])
+def test():
+    """Test the app is running and concurrency is working."""
+    t = Thread(target=some_test)
+    t.start()
+    return "Your request has been received. And you'll see results shortly", 200
+
+
 @app.route('/tickers/<term>', methods=['GET'])
 def get_tickers(term):
     """Get a list of possible symbols for a given query."""
     return jsonify(get_query_related_tickers(term)), 200
 
 
+def some_test():
+    """Test concurrent features."""
+    sleep(5)
+    print "The follow up method has completed its execution"
+
+
 if __name__ == '__main__':
     """Main method."""
-    app.run(host='127.0.0.1', port=5001)
+    app.run(host='127.0.0.1', port=5001, threaded=True)
