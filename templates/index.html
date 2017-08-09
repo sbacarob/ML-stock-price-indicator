@@ -16,6 +16,7 @@
     <link rel="import" href="../static/scripts/bower_components/polymer/polymer.html" />
     <link rel="import" href="../static/polymer-templates/stock-chart.html" />
     <link rel="import" href="../static/polymer-templates/tracking-stock.html" />
+    <link rel="import" href="../static/polymer-templates/tracking-dates.html" />
     <link href="https://fonts.googleapis.com/css?family=Yantramanav" rel="stylesheet">
     <script src="../static/scripts/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css">
@@ -36,7 +37,7 @@
           Add stocks to track:
         </h3>
         <label for="input-symb">Company</label>
-        <input id="input-symb" type="text" class="form-control" placeholder="Company or symbol" style="margin-bottom:15px"/>
+        <input id="input-symb" type="text" class="form-control" placeholder="Search for company or symbol" style="margin-bottom:15px"/>
         <div class="col-md-12" style="padding-left:0">
           Predict for
         </div>
@@ -56,23 +57,6 @@
         <div class="col-md-5 predict-dates" style="padding:0">
           <input id="end-date" type="text" class="form-control col-md-6 datepicker" placeholder="End date"/>
         </div>
-        <div class="col-md-12" style="padding-left:0">
-          Training settings
-        </div>
-        <input id="full-data" type="radio" name="train-data" value="full-data" checked><label for="full-data"> Use all data </label>
-        <input id="data-range" type="radio" name="train-data" value="data-range"><label for="data-range"> Date range </label>
-        <div class="col-md-5 data-dates" style="padding:0">
-          <input id="begin-ddate" type="text" class="form-control col-md-6 datepicker" placeholder="Begin date"/>
-        </div>
-        <div class="col-md-2 text-center data-dates">
-          <p style="margin-top:5px">
-            <strong>-</strong>
-          </p>
-        </div>
-        <div class="col-md-5 data-dates" style="padding:0">
-          <input id="end-ddate" type="text" class="form-control col-md-6 datepicker" placeholder="End date"/>
-        </div>
-        <button id="btn-preadd" class="btn form-control" style="background:#242F39;color:#ccc;margin-top:10px">Pre-Add</button>
         <button id="btn-add" class="btn form-control btn-info" style="margin-top:5px;background:#82b1ff;color:#21242F">Add Now</button>
       </div>
       <div id="mainpane" class="col-md-9" style="overflow-y:scroll">
@@ -122,6 +106,8 @@
         $("input[name=query-type]").change(function(){
           if(this.value == 'days-from-now'){
             $("#input-days").css('display', 'block');
+            $("#begin-date").val('');
+            $("#end-date").val('');
             $(".predict-dates").css('display', 'none');
           }
           else{
@@ -132,18 +118,9 @@
 
         $("#r-dfn").click();
 
-        $("input[name=train-data]").change(function(){
-          if(this.value == 'full-data'){
-            $(".data-dates").css('display', 'none');
-          }
-          else{
-            $(".data-dates").css('display', 'block');
-          }
+        $(".datepicker").datepicker({
+          format:'yyyy-mm-dd'
         });
-
-        $("#full-data").click();
-
-        $(".datepicker").datepicker();
       });
 
       $(window).resize(function(){
@@ -161,9 +138,17 @@
         var symb = $("#input-symb").val();
         if (symb.includes(')') && symb.includes('(')){
           symb = symb.substring(symb.indexOf('(') + 1, symb.indexOf(')'));
-          var days = $("#input-days").val();
+          lcsymb = symb.toLowerCase();
           if(Object.getOwnPropertyNames($("#" + symb + "-track-" + days)).length == 0){
-            $("#tracking-pane").append("<div class='col-md-4' style='height:300px;margin-top:10px;margin-bottom:25px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>");
+            var selected = $("input[name=query-type]:checked").val();
+            if(selected == 'days-from-now'){
+              var days = $("#input-days").val();
+              $("#tracking-pane").append("<div class='col-md-4' style='height:300px;margin-top:10px;margin-bottom:25px'><tracking-stock symb='" + symb + "' kind='stock' days='" + days + "'></tracking-stock></div>");
+            }else{
+              var b_date = $("#begin-date").val();
+              var e_date = $("#end-date").val();
+              $("#tracking-pane").append("<div class='col-md-4' style='height:300px;margin-top:10px;margin-bottom:25px'><tracking-date symb='" + symb + "' kind='stock' bdate='" + b_date + "' edate='" + e_date + "'></tracking-date></div>");
+            }
           }
           else{
             alert("You're already watching this setting. Try changing the stock's symbol or the number of days.");

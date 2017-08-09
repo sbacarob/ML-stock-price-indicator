@@ -60,5 +60,12 @@
       "ver": "0.102.102",
       "returnMeta": "true"
     }
+  },
+  "google-stocks": {
+    "base_url": "https://www.google.com/finance/historical",
+    "params": {
+      "output": "csv",
+      "startdate": "Jan 01, 1980"
+    }
   }
 }

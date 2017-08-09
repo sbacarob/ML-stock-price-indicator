@@ -1,6 +1,7 @@
 """Module that runs the application."""
 from time import sleep
 from threading import Thread
+from controllers.logic import *
 from controllers.helpers import *
 from controllers.stock import Stock
 from controllers.model import Model
@@ -8,8 +9,6 @@ from datetime import timedelta, datetime
 from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
-
-model = None
 
 
 @app.route('/', methods=['GET'])
@@ -20,18 +19,29 @@ def index():
 
 @app.route('/train/<symb>', methods=['GET', 'POST'])
 def train_model(symb):
-    """Train a model for the given date range and ticker symbols."""
-    print(request)
-    s = Stock(str(symb))
-    X, y, x_pred = s.get_subsets()
-    model = Model()
-    model.train(X, y)
-    return jsonify(str(model.predict(x_pred))), 200
+    """Train a model for the given prediction date range and ticker symbols."""
+    print request
+    begin_date = request.args.get('pfrom', '')
+    end_date = request.args.get('puntil', '')
+    n_days = request.args.get('ndays', '')
+    if n_days != '':
+        n_days = int(n_days)
+    key = get_key(symb, n_days, begin_date, end_date)
+    response_status = get_key_status(key)
+    t = Thread(target=train, args=(symb, n_days, begin_date, end_date))
+    t.start()
+    resp = jsonify(json.dumps({'key': key}))
+    return resp, response_status
 
 
 @app.route('/predict', methods=['GET', 'POST'])
-def predict():
+def prediction():
     """Make predictions for the given date range and ticker symbols."""
+    key = request.args.get('key', '')
+    resp, status = predict(key)
+    if status == 200:
+        return jsonify(resp), status
+    return resp, status
 
 
 @app.route('/hcdata', methods=['GET'])
@@ -42,29 +52,6 @@ def get_hc_ready_data():
     list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix),
                    k[symb]] for ix, k in stock.iterrows()]
     return jsonify(list_in_hc), 200
-
-
-@app.route('/hcpredict', methods=['GET'])
-def get_hc_prediction_data():
-    """Return the data for a stock and predictions for the given number of days."""
-    symb = request.args.get('symb', '')
-    n_days = int(request.args.get('days', ''))
-    s = Stock(symb)
-    stock = retrieve_stock_info(symb)
-    X, y, x_pred = s.get_subsets(n_days=n_days)
-    model = Model()
-    model.train(X, y)
-    t_a = x_pred.index[0]
-    t_b = datetime.now()
-    diff = t_b - t_a
-    delta = int(diff.total_seconds() / 60 / 60 / 24)
-    predicted_dates = [(val + timedelta(days=delta)).value / 1000000 for val in x_pred.index]
-    predicted = model.predict(x_pred)
-    print predicted
-    pred_res = [[predicted_dates[i], k * stock.ix[0][symb]] for i, k in enumerate(predicted)]
-    print pred_res
-    return jsonify({'base': [[ix.value / 1000000, k[symb]] for ix,
-                             k in stock.iterrows()], 'predicted': pred_res})
 
 
 @app.route('/test', methods=['GET'])
@@ -81,12 +68,5 @@ def get_tickers(term):
     return jsonify(get_query_related_tickers(term)), 200
 
 
-def some_test():
-    """Test concurrent features."""
-    sleep(5)
-    print "The follow up method has completed its execution"
-
-
 if __name__ == '__main__':
-    """Main method."""
     app.run(host='127.0.0.1', port=5001, threaded=True)

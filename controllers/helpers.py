@@ -20,25 +20,31 @@ def retrieve_stock_info(symb):
     if index_string in cached_stocks:
         return cached_stocks[index_string]
     with open('data/%s.csv' % (symb), 'wb') as fi:
-        response = requests.get('http://ichart.finance.yahoo.com/table.csv?s=%s' %
-                                (symb), stream=True)
+        query_url = endpoints['google-stocks']['base_url']
+        params = {ix: k for ix, k in build_google_url(symb).items()}
+        params['q'] = symb
+        response = requests.get(query_url, params=params, stream=True)
         if not response.ok:
             return None
+        print response.url
         for segment in response.iter_content(1024):
-            fi.write(segment)
-        df = pd.read_csv('data/%s.csv' % (symb),
-                         index_col='Date', parse_dates=True,
-                         usecols=['Date', 'Adj Close'], na_values=['NaN'])
-        df = df.rename(columns={'Adj Close': symb})
-        df = df.reindex(index=df.index[::-1])
-        df = df.dropna()
-        cached_stocks[index_string] = df
-        return df
+            fi.write(segment.decode('utf-8-sig'))
+    df = pd.read_csv('data/%s.csv' % (symb),
+                     index_col='Date',
+                     parse_dates=True,
+                     na_values=['NaN'],
+                     usecols=['Date', 'Close'])
+    print df.columns
+    df = df.rename(columns={'Close': symb})
+    df = df.reindex(index=df.index[::-1])
+    df = df.dropna()
+    cached_stocks[index_string] = df
+    return df
 
 
-def normalize_data(data, symb):
+def normalize_data(data):
     """Return the normalized data."""
-    return data / data.ix[0][symb]
+    return data / data.ix[0]
 
 
 def get_empty_df():
@@ -84,6 +90,7 @@ def get_query_related_tickers(term):
 
 def get_subset_dates(data, begin_date=None, end_date=None):
     """Return the data within the given dates."""
+    reass = False
     if type(begin_date) is str:
         begin_date = datetime.strptime(begin_date, '%Y-%m-%d')
     if type(end_date) is str:
@@ -91,12 +98,19 @@ def get_subset_dates(data, begin_date=None, end_date=None):
     if begin_date > end_date:
         raise Exception('Invalid date range.')
     if begin_date is None:
+        reass = True
         begin_date = data.index[0]
     if end_date is None:
+        reass = True
         end_date = data.index[-1]
     try:
-        bd2, ed2 = pd.Timestamp(begin_date), pd.Timestamp(end_date)
-        return data.ix[bd2: ed2]
+        print "ENTRA EN EL TRY"
+        bd2 = pd.Timestamp(begin_date)
+        print "DEFINE BD2: %s" % bd2
+        if not reass:
+            print "ENTRA EN EL IF DE REASS"
+            return data.ix[: bd2]
+        return data
     except Exception:
         ix = data.index
         if begin_date not in ix:
@@ -117,5 +131,14 @@ def get_subset_dates(data, begin_date=None, end_date=None):
                     break
             if not changed:
                 end_date = ix[-1]
-        bd2, ed2 = pd.Timestamp(begin_date), pd.Timestamp(end_date)
-        return data.ix[bd2: ed2]
+        bd2 = pd.Timestamp(begin_date)
+        return data.ix[: bd2]
+
+
+def build_google_url(symb):
+    """Build a URL to get a stock quote from Google."""
+    endpoint = endpoints['google-stocks']
+    dt = datetime.now()
+    formatted_dt = dt.strftime('%b %d, %Y')
+    endpoint['params']['enddate'] = formatted_dt
+    return endpoint['params']

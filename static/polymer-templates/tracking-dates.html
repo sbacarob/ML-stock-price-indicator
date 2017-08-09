@@ -1,9 +1,9 @@
 <link rel="import" href="../scripts/bower_components/iron-ajax/iron-ajax.html">
-<dom-module id="tracking-stock">
+<dom-module id="tracking-date">
 	<template>
 		<!-- Template para los items de la lista de microservicios -->
-		<iron-ajax auto url="/train/[[symb]]?ndays=[[days]]" handle-as="json" on-response="handleResponse"></iron-ajax>
-		<div class="col-md-12 text-center" id="[[symb]]-track-[[days]]" style="padding:0;background:#242f39;height:100%">
+		<iron-ajax auto url="/train/[[symb]]?pfrom=[[bdate]]&puntil=[[edate]]" handle-as="json" on-response="handleResponse"></iron-ajax>
+		<div class="col-md-12 text-center" id="[[symb]]-track-[[bdate]]-[[edate]]" style="padding:0;background:#242f39;height:100%">
 			<span class="fa fa-5x fa-spin fa-spinner" style="font-size:72pt;margin-top:60px;display:block"></span>
 			<p style="color:#ccc;font-size:16pt;margin-top:20px">
 				Your request was received. Data will appear shortly.
@@ -13,35 +13,39 @@
 	<script>
 
 		Polymer({
-			is: 'tracking-stock',
+			is: 'tracking-date',
 			properties: {
 				symb: String,
         kind: String,
-				days: {
-					type: String,
-					value: '7'
-				}
+				bdate: String,
+        edate: String
 			},
 			ready: function(){
 			},
 			handleResponse: function(data){
+        var bd = new Date(this.bdate);
+        var ed = new Date(this.edate);
+        this.days = (ed - bd) / 86400000;
+        console.log(this.days);
+        console.log(data);
 				var data = JSON.parse(data['detail']['__data__']['response']);
 				var k = data['key'];
 				this.queryPredictions(k);
-			  },
+			},
 			queryPredictions: function(key){
 				var tmp = this;
 				var url = '/predict?key=' + key;
 
 				$.get(url, function(data){
 					var pred_ys = data;
+          console.log(data);
 					$.get('/hcdata?symb=' + tmp.symb, function(data1){
 						var prev_data = data1;
-						var last_n_dts = prev_data.slice(-1).map(i => i[0]);
-						var pd = last_n_dts[0]
+						var pd = new Date(tmp.bdate) / 1;
 						for (i=0; i<tmp.days; i++){
-							prev_data.push([pd + (i+1) * 86400000, pred_ys[i]]);
+							prev_data.push([pd + (i + 1) * 86400000, pred_ys[i]]);
 						}
+            console.log(prev_data);
 						tmp.renderCharts(prev_data);
 					});
 				}).fail(function(){
@@ -53,7 +57,7 @@
 				var old_data = data.slice(0, -this.days);
         var predictions = data.slice(-this.days);
 
-        Highcharts.stockChart(this.symb + '-track-' + this.days, {
+        Highcharts.stockChart(this.symb + '-track-' + this.bdate + '-' + this.edate, {
             rangeSelector: {
                 selected: 1
             },
@@ -74,7 +78,9 @@
 						xAxis: {
 							title: {
 								text: this.symb
-							}
+							},
+							min: new Date(this.bdate) / 1,
+							max: new Date(this.edate) / 1
 						}
         	});
 			}
