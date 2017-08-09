@@ -89,6 +89,6 @@ In order to use the GUI, you just have to open your browser and go to `http://lo
 
 You should see something like this:
 
-![Screenshot](https://github.com/sbacarob)
+![Screenshot](https://github.com/sbacarob/Udacity-Capstone-Project/blob/master/docs/img/screenshot.png)
 
 Here you can use the form to search for companies' symbols. Select one from the dropdown list and then specify if you want to predict for a given number of days or a date range. Specify the number of days or the date range and click on the button. A panel will be added to the right, displaying the stock price along with the predicted data.
