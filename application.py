@@ -1,5 +1,6 @@
 """Module that runs the application."""
 from time import sleep
+from json import dumps
 from threading import Thread
 from controllers.logic import *
 from controllers.helpers import *
@@ -51,7 +52,7 @@ def get_hc_ready_data():
     stock = retrieve_stock_info(symb)
     list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix),
                    k[symb]] for ix, k in stock.iterrows()]
-    return jsonify(list_in_hc), 200
+    return dumps(list_in_hc), 200
 
 
 @app.route('/test', methods=['GET'])

@@ -10,8 +10,7 @@ cached_stocks = {}
 
 
 def retrieve_stock_info(symb):
-    """
-    Retrieve the info for a stock.
+    """Retrieve the info for a stock.
 
     :param symb: the symbol of the stock we want to get.
     :return: a dataframe with the info for the stock with the given symbol. None if the request was not succesful.
@@ -20,9 +19,9 @@ def retrieve_stock_info(symb):
     if index_string in cached_stocks:
         return cached_stocks[index_string]
     with open('data/%s.csv' % (symb), 'wb') as fi:
-        query_url = endpoints['google-stocks']['base_url']
-        params = {ix: k for ix, k in build_google_url(symb).items()}
-        params['q'] = symb
+        query_url = endpoints['alpha-vantage']['base_url']
+        params = endpoints['alpha-vantage']['params']
+        params['symbol'] = symb
         response = requests.get(query_url, params=params, stream=True)
         if not response.ok:
             return None
@@ -30,12 +29,12 @@ def retrieve_stock_info(symb):
         for segment in response.iter_content(1024):
             fi.write(segment.decode('utf-8-sig'))
     df = pd.read_csv('data/%s.csv' % (symb),
-                     index_col='Date',
+                     index_col='timestamp',
                      parse_dates=True,
                      na_values=['NaN'],
-                     usecols=['Date', 'Close'])
+                     usecols=['timestamp', 'adjusted_close'])
     print df.columns
-    df = df.rename(columns={'Close': symb})
+    df = df.rename(columns={'adjusted_close': symb})
     df = df.reindex(index=df.index[::-1])
     df = df.dropna()
     cached_stocks[index_string] = df
@@ -104,11 +103,8 @@ def get_subset_dates(data, begin_date=None, end_date=None):
         reass = True
         end_date = data.index[-1]
     try:
-        print "ENTRA EN EL TRY"
         bd2 = pd.Timestamp(begin_date)
-        print "DEFINE BD2: %s" % bd2
         if not reass:
-            print "ENTRA EN EL IF DE REASS"
             return data.ix[: bd2]
         return data
     except Exception:
@@ -133,12 +129,3 @@ def get_subset_dates(data, begin_date=None, end_date=None):
                 end_date = ix[-1]
         bd2 = pd.Timestamp(begin_date)
         return data.ix[: bd2]
-
-
-def build_google_url(symb):
-    """Build a URL to get a stock quote from Google."""
-    endpoint = endpoints['google-stocks']
-    dt = datetime.now()
-    formatted_dt = dt.strftime('%b %d, %Y')
-    endpoint['params']['enddate'] = formatted_dt
-    return endpoint['params']
