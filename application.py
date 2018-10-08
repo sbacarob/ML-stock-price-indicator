@@ -31,7 +31,7 @@ def train_model(symb):
     response_status = get_key_status(key)
     t = Thread(target=train, args=(symb, n_days, begin_date, end_date))
     t.start()
-    resp = jsonify(json.dumps({'key': key}))
+    resp = dumps({'key': key})
     return resp, response_status
 
 
@@ -41,7 +41,7 @@ def prediction():
     key = request.args.get('key', '')
     resp, status = predict(key)
     if status == 200:
-        return jsonify(resp), status
+        return dumps(resp), status
     return resp, status
 
 
@@ -66,7 +66,7 @@ def test():
 @app.route('/tickers/<term>', methods=['GET'])
 def get_tickers(term):
     """Get a list of possible symbols for a given query."""
-    return jsonify(get_query_related_tickers(term)), 200
+    return dumps(get_query_related_tickers(term)), 200
 
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ def retrieve_stock_info(symb):
                      na_values=['NaN'],
                      usecols=['timestamp', 'adjusted_close'])
     print df.columns
-    df = df.rename(columns={'adjusted_close': symb})
+    df = df.rename(columns={'adjusted_close': symb, 'timestamp': 'Date'})
     df = df.reindex(index=df.index[::-1])
     df = df.dropna()
     cached_stocks[index_string] = df
