@@ -20,7 +20,7 @@ def retrieve_stock_info(symb):
         return cached_stocks[index_string]
     with open('data/%s.csv' % (symb), 'wb') as fi:
         query_url = endpoints['alpha-vantage']['base_url']
-        params = endpoints['alpha-vantage']['params']
+        params = dict(endpoints['alpha-vantage']['params'])
         params['symbol'] = symb
         response = requests.get(query_url, params=params, stream=True)
         if not response.ok:
@@ -34,7 +34,7 @@ def retrieve_stock_info(symb):
                      na_values=['NaN'],
                      usecols=['timestamp', 'adjusted_close'])
     print df.columns
-    df = df.rename(columns={'adjusted_close': symb, 'timestamp': 'Date'})
+    df = df.rename(columns={'adjusted_close': symb})
     df = df.reindex(index=df.index[::-1])
     df = df.dropna()
     cached_stocks[index_string] = df
