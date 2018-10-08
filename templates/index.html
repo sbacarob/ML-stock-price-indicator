@@ -94,7 +94,6 @@
 
         var url = "/tickers/<replace>"
         $("#input-symb").keypress(function(){
-          console.log("Entra en la función");
           req_url = url.replace('<replace>', $(this).val());
           $.get(req_url, function(data){
             $("#input-symb").autocomplete({

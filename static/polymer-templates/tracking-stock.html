@@ -25,7 +25,7 @@
 			ready: function(){
 			},
 			handleResponse: function(data){
-				var data = JSON.parse(data['detail']['__data__']['response']);
+				var data = data['detail']['__data__']['response'];
 				var k = data['key'];
 				this.queryPredictions(k);
 			  },

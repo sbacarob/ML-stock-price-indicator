@@ -67,5 +67,14 @@
       "output": "csv",
       "startdate": "Jan 01, 1980"
     }
+  },
+  "alpha-vantage": {
+    "base_url": "https://www.alphavantage.co/query",
+    "params": {
+      "function": "TIME_SERIES_DAILY_ADJUSTED",
+      "outputsize": "full",
+      "datatype": "csv",
+      "apikey": "demo"
+    }
   }
 }

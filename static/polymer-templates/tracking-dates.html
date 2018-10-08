@@ -26,8 +26,6 @@
         var bd = new Date(this.bdate);
         var ed = new Date(this.edate);
         this.days = (ed - bd) / 86400000;
-        console.log(this.days);
-        console.log(data);
 				var data = JSON.parse(data['detail']['__data__']['response']);
 				var k = data['key'];
 				this.queryPredictions(k);
