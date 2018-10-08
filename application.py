@@ -41,8 +41,8 @@ def prediction():
     key = request.args.get('key', '')
     resp, status = predict(key)
     if status == 200:
-        return dumps(resp), status
-    return resp, status
+        return dumps(resp), status, {'Content-Type': 'application/json'}
+    return resp, status, {'Content-Type': 'application/json'}
 
 
 @app.route('/hcdata', methods=['GET'])
@@ -52,7 +52,7 @@ def get_hc_ready_data():
     stock = retrieve_stock_info(symb)
     list_in_hc = [[ix.value / 1000000 if type(ix) is not str else get_timestamp_from_date(ix),
                    k[symb]] for ix, k in stock.iterrows()]
-    return dumps(list_in_hc), 200
+    return dumps(list_in_hc), 200, {'Content-Type': 'application/json'}
 
 
 @app.route('/test', methods=['GET'])
@@ -66,7 +66,7 @@ def test():
 @app.route('/tickers/<term>', methods=['GET'])
 def get_tickers(term):
     """Get a list of possible symbols for a given query."""
-    return dumps(get_query_related_tickers(term)), 200
+    return dumps(get_query_related_tickers(term)), 200, {'Content-Type': 'application/json'}
 
 
 if __name__ == '__main__':
