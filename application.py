@@ -1,13 +1,9 @@
 """Module that runs the application."""
-from time import sleep
 from json import dumps
 from threading import Thread
 from controllers.logic import *
 from controllers.helpers import *
-from controllers.stock import Stock
-from controllers.model import Model
-from datetime import timedelta, datetime
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
